@@ -10,7 +10,6 @@ int getPanorama(String srcPath, Mat &dstMat, Stitcher::Mode mode = Stitcher::PAN
     vector<String> srcName;
 
     glob(srcPath, srcName, false);
-
     for (auto src : srcName)
     {
         Mat mat = imread(src);
