@@ -22,8 +22,8 @@ Image::Image(String srcPath)
 
 Image::~Image()
 {
-	for (auto src : srcMats)
-		src.release();
+    for (auto src : srcMats)
+        src.release();
     srcMat.release();
 }
 
@@ -45,16 +45,16 @@ bool isFolder(String path)
         return false;
 }
 
-int Image::CannyFunc(int pos)
+int Image::canny(int threshold)
 {
-	Mat GrayImage;
-	Mat CannyImage;
-	GrayImage.create(srcMat.size(), srcMat.type());
-	cvtColor(srcMat, pGrayImage, COLOR_BGR2GRAY);
-	CannyImage.create(srcMat.size(), srcMat.type());
-	Canny(GrayImage, CannyImage, pos, pos*3, 3);
-	dstMat = CannyImage;
+    Mat GrayImage;
+    Mat CannyImage;
 
+    GrayImage.create(srcMat.size(), srcMat.type());
+    cvtColor(srcMat, pGrayImage, COLOR_BGR2GRAY);
+    CannyImage.create(srcMat.size(), srcMat.type());
+    Canny(GrayImage, CannyImage, threshold, threshold * 3, 3);
+    dstMat = CannyImage;
 }
 
 int Image::panorama(Stitcher::Mode mode = Stitcher::PANORAMA)
@@ -70,5 +70,5 @@ int Image::panorama(Stitcher::Mode mode = Stitcher::PANORAMA)
 
 Mat Image::getDstMat()
 {
-	return dstMat;
+    return dstMat;
 }
