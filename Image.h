@@ -8,7 +8,11 @@ using namespace cv;
 
 class Image
 {
-public:
+  private:
+	vector<Mat> srcMats;
+	Mat srcMat;
+
+  public:
 	Image(String srcPath);
 
 	int Panorama();

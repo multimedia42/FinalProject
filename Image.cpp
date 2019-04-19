@@ -3,9 +3,6 @@
 using namespace std;
 using namespace cv;
 
-vector<Mat> srcMats;
-Mat srcMat;
-
 Image::Image(String srcPath)
 {
     if (isFolder(srcPath))
