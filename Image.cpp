@@ -22,7 +22,7 @@ Image::Image(String srcPath)
 
 Image::~Image()
 {
-    srcMats.release();
+    //srcMats.release();
     srcMat.release();
 }
 
@@ -53,4 +53,44 @@ int Image::Panorama(Mat &dstMat, Stitcher::Mode mode = Stitcher::PANORAMA)
         return EXIT_SUCCESS;
     else
         return EXIT_FAILURE;
+}
+
+Mat Image::getLightened(Mat srcimg, int trackBarValue)
+{
+	// Check for failure
+	if (!srcimg.data) {
+		cout << "no image" << endl;
+		return -1;
+	}
+		Mat increase = Mat::zeros(srcimg.size(), srcimg.type());
+		srcimg.Mat::convertTo(increase, CV_8U, 1, trackBarValue);
+		return increase;
+}
+
+Mat Image::getDarkened(Mat srcimg, int trackBarValue)
+{
+	// Check for failure
+	if (!srcimg.data) {
+		cout << "no image" << endl;
+		return -1;
+	}
+		Mat decrease = Mat::zeros(srcimg.size(), srcimg.type());
+		srcimg.Mat::convertTo(decrease, CV_8U, 1, -trackBarValue);
+		return decrease;
+}
+
+Mat Image::getResized(Mat srcimg, int trackBarValue)
+{
+
+	if (!srcimg.data) {
+		cerr << "cannot load image" << endl;
+		return -1;
+	}
+	Mat dstimg;
+
+	// Scaling the image	
+	double size = (double)trackBarValue / 100;
+	resize(srcimg, dstimg, Size(0, 0), size, size, INTER_LINEAR);
+
+	return dstimg;
 }
