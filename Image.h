@@ -11,9 +11,11 @@ class Image
 private:
 	vector<Mat> srcMats;
 	Mat srcMat;
+	Mat dstMat;
 
 public:
 	Image(String srcPath);
 
-	int Panorama(Mat& dstMat, Stitcher::Mode mode = Stitcher::PANORAMA);
+	int Panorama(Stitcher::Mode mode = Stitcher::PANORAMA);
+	Mat getDstMat();
 };
