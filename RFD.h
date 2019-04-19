@@ -4,6 +4,7 @@
 #include <iostream>
 
 using namespace cv;
+using namespace std;
 
 int  getLightened(Mat srcimg);
 int getDarkened(Mat srcimg);
