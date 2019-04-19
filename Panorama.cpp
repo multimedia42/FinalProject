@@ -4,7 +4,7 @@
 using namespace cv;
 using namespace std;
 
-int getPanorama(String srcPath, Mat &dstMat, Stitcher::Mode mode = Stitcher::PANORAMA)
+int Panorama(String srcPath, Mat &dstMat, Stitcher::Mode mode = Stitcher::PANORAMA)
 {
     vector<Mat> srcMat;
     vector<String> srcName;
