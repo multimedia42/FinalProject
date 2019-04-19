@@ -8,12 +8,12 @@ using namespace cv;
 
 class Image
 {
-  private:
+private:
 	vector<Mat> srcMats;
 	Mat srcMat;
 
-  public:
+public:
 	Image(String srcPath);
 
-	int Panorama(String srcPath, Mat &dstMat, Stitcher::Mode mode = Stitcher::PANORAMA);
+	int Panorama(Mat& dstMat, Stitcher::Mode mode = Stitcher::PANORAMA);
 };

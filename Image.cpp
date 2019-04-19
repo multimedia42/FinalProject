@@ -22,7 +22,8 @@ Image::Image(String srcPath)
 
 Image::~Image()
 {
-    srcMats.release();
+	for (auto src : srcMats)
+		src.release();
     srcMat.release();
 }
 
