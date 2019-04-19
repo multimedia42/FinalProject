@@ -7,7 +7,7 @@ int main()
 {
 	Image* image = new Image("../Data/pano");
 
-	if (image->Panorama() == EXIT_SUCCESS)
+	if (image->panorama() == EXIT_SUCCESS)
 	{
 		namedWindow("Pano", WINDOW_AUTOSIZE);
 		imshow("Pano", image->getDstMat());

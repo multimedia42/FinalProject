@@ -45,7 +45,7 @@ bool isFolder(String path)
         return false;
 }
 
-int Image::Panorama(Stitcher::Mode mode = Stitcher::PANORAMA)
+int Image::panorama(Stitcher::Mode mode = Stitcher::PANORAMA)
 {
     Ptr<Stitcher> stitcher = Stitcher::create(mode);
     Stitcher::Status status = stitcher->stitch(srcMats, dstMat);

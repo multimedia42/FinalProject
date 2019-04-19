@@ -16,6 +16,6 @@ private:
 public:
 	Image(String srcPath);
 
-	int Panorama(Stitcher::Mode mode = Stitcher::PANORAMA);
+	int panorama(Stitcher::Mode mode = Stitcher::PANORAMA);
 	Mat getDstMat();
 };
