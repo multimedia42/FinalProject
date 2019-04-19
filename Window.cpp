@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Image.h" 
 
 using namespace std;
 using namespace cv;
@@ -17,8 +18,8 @@ void Window::Show(Mat matname){
 
 }
 
-void Window::createTeackBar(String trackBarName, int initialValue, int maxValue) {
-	int tb = createTrackbar(trackBarName, windowName, &initialValue, maxValue, 0, 0);
+void Window::createTeackBar(String trackBarName, int initialValue, int maxValue,viod Callback) {
+	int tb = createTrackbar(trackBarName, windowName, &initialValue, maxValue, Callback, 0);
 }
 
 void Window::resizeCallback(void initialValue, void* userdata) {

@@ -9,6 +9,7 @@
 	   class Window {
 	   private:
 		   String windowName;
+		   Image image;
 	   public:
 		   Window();
 		   ~Window();
