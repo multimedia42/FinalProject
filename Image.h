@@ -15,7 +15,7 @@ private:
 
 public:
 	Image(String srcPath);
-
+	int CannyFunc(int pos)
 	int panorama(Stitcher::Mode mode = Stitcher::PANORAMA);
 	Mat getDstMat();
 };

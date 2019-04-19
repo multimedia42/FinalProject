@@ -45,6 +45,18 @@ bool isFolder(String path)
         return false;
 }
 
+int Image::CannyFunc(int pos)
+{
+	Mat GrayImage;
+	Mat CannyImage;
+	GrayImage.create(srcMat.size(), srcMat.type());
+	cvtColor(srcMat, pGrayImage, COLOR_BGR2GRAY);
+	CannyImage.create(srcMat.size(), srcMat.type());
+	Canny(GrayImage, CannyImage, pos, pos*3, 3);
+	dstMat = CannyImage;
+
+}
+
 int Image::panorama(Stitcher::Mode mode = Stitcher::PANORAMA)
 {
     Ptr<Stitcher> stitcher = Stitcher::create(mode);
