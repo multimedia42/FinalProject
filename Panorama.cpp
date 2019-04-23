@@ -28,7 +28,7 @@ int Panorama(String srcPath, Mat &dstMat, Stitcher::Mode mode = Stitcher::PANORA
 int main(int argc, char *argv[])
 {
     Mat dstMat;
-    getPanorama("../Data/pano", dstMat);
+    //getPanorama("../Data/pano", dstMat);
 
     namedWindow("Pano", WINDOW_AUTOSIZE);
     imshow("Pano", dstMat);

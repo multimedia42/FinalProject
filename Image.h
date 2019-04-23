@@ -16,7 +16,7 @@ class Image
 	Image(String srcPath);
 
 	int Panorama(String srcPath, Mat &dstMat, Stitcher::Mode mode = Stitcher::PANORAMA);
-	Mat getLightened(Mat srcimg, int trackBarValue);
-	Mat getDarkened(Mat srcimg, int trackBarValue);
-	Mat getResized(Mat srcimg, int trackBarValue);
+	Mat getLightened(int trackBarValue);
+	Mat getDarkened(int trackBarValue);
+	Mat getResized(int trackBarValue);
 };
