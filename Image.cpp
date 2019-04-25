@@ -3,6 +3,26 @@
 using namespace std;
 using namespace cv;
 
+// true = isFolder
+// false = isFile
+bool isFolder(String path)
+{
+	size_t sizePath = path.length();
+	wchar_t* bufferPath = new wchar_t[sizePath + 1];
+
+	MultiByteToWideChar(CP_ACP, 0, path.c_str(), sizePath, bufferPath, sizePath * sizeof(wchar_t));
+	bufferPath[sizePath] = 0;
+
+	WIN32_FIND_DATA FindFileData;
+	FindFirstFile(bufferPath, &FindFileData);
+	if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		return true;
+	else
+		return false;
+}
+
+Image::Image() {}
+
 Image::Image(String srcPath)
 {
     if (isFolder(srcPath))
@@ -22,39 +42,9 @@ Image::Image(String srcPath)
 
 Image::~Image()
 {
-    for (auto src : srcMats)
-        src.release();
+	for (auto src : srcMats)
+		src.release();
     srcMat.release();
-}
-
-// true = isFolder
-// false = isFile
-bool isFolder(String path)
-{
-    size_t sizePath = path.length();
-    wchar_t *bufferPath = new wchar_t[sizePath + 1];
-
-    MultiByteToWideChar(CP_ACP, 0, path.c_str(), sizePath, bufferPath, sizePath * sizeof(wchar_t));
-    bufferPath[sizePath] = 0;
-
-    WIN32_FIND_DATA FindFileData;
-    FindFirstFile(bufferPath, &FindFileData);
-    if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-        return true;
-    else
-        return false;
-}
-
-int Image::canny(int threshold)
-{
-    Mat GrayImage;
-    Mat CannyImage;
-
-    GrayImage.create(srcMat.size(), srcMat.type());
-    cvtColor(srcMat, pGrayImage, COLOR_BGR2GRAY);
-    CannyImage.create(srcMat.size(), srcMat.type());
-    Canny(GrayImage, CannyImage, threshold, threshold * 3, 3);
-    dstMat = CannyImage;
 }
 
 int Image::panorama(Stitcher::Mode mode = Stitcher::PANORAMA)
@@ -70,5 +60,5 @@ int Image::panorama(Stitcher::Mode mode = Stitcher::PANORAMA)
 
 Mat Image::getDstMat()
 {
-    return dstMat;
+	return dstMat;
 }
