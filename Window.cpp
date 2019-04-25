@@ -23,10 +23,14 @@ void Window::createTeackBar(String trackBarName, int initialValue, int maxValue,
 	int tb = createTrackbar(trackBarName, windowName, &initialValue, maxValue, Callback, 0);
 }
 
-cv::TrackbarCallback Window::resizeCallback(int initialValue, void* userdata) {
+void Window::resizeCallback(int initialValue, void* userdata) {
 	dstimg.getResized(initialValue);
 }
 
-cv::TrackbarCallback Window::lightenCallback(int initialValue, void* userdata) {
+void Window::lightenCallback(int initialValue, void* userdata) {
 	dstimg.getLightened(initialValue);
 }
+
+/*cv::TrackbarCallback Window::cannyCallback(int initialValue, void* userdata) {
+	dstimg.getCannied(initialValue);
+}*/

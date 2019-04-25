@@ -18,8 +18,10 @@ class Image
 	Image(String srcPath);
 	Image();
 	~Image();
-	bool isFolder(String path);
 	int canny(int threshold);
 	int panorama(Stitcher::Mode mode = Stitcher::PANORAMA);
-	Mat getDstMat();;
+	Mat getDstMat();
+	Mat getLightened(int trackBarValue);
+	Mat getResized(int trackBarValue);
+	;
 };

@@ -16,7 +16,7 @@
 
 		   void Show();
 		   void createTeackBar( String trackBarName, int initialValue, int maxValue, cv::TrackbarCallback Callback);
-		   cv::TrackbarCallback resizeCallback(int initialValue, void* userdata);
-		   cv::TrackbarCallback darkenCallback(int initialValue, void* userdata);
-		   cv::TrackbarCallback lightenCallback(int initialValue, void* userdata);
+		   void resizeCallback(int initialValue, void* userdata);
+		   void lightenCallback(int initialValue, void* userdata);
+		   //cv::TrackbarCallback cannyCallback(int initialValue, void * userdata);
 	   };
