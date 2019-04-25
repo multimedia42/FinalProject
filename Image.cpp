@@ -47,6 +47,17 @@ Image::~Image()
     srcMat.release();
 }
 
+int Image::canny(int threshold)
+{
+    Mat GrayImage;
+    Mat CannyImage;
+    GrayImage.create(srcMat.size(), srcMat.type());
+    cvtColor(srcMat, pGrayImage, COLOR_BGR2GRAY);
+    CannyImage.create(srcMat.size(), srcMat.type());
+    Canny(GrayImage, CannyImage, threshold, threshold * 3, 3);
+    dstMat = CannyImage;
+}
+
 int Image::panorama(Stitcher::Mode mode = Stitcher::PANORAMA)
 {
     Ptr<Stitcher> stitcher = Stitcher::create(mode);
