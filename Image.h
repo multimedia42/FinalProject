@@ -9,14 +9,18 @@ using namespace cv;
 class Image
 {
   private:
-	vector<Mat> srcMats;
-	Mat srcMat;
+	  vector<Mat> srcMats;
+	  Mat srcMat;
+	  Mat dstMat;
 
   public:
-	Image(String srcPath);
+	  Image(String srcPath);
+	  Image();
+	  ~Image();
 
 	int Panorama(String srcPath, Mat &dstMat, Stitcher::Mode mode = Stitcher::PANORAMA);
-	Mat getLightened(int trackBarValue);
-	Mat getDarkened(int trackBarValue);
-	Mat getResized(int trackBarValue);
+	Mat getDstMat();
+	Mat Lightening(int trackBarValue);
+
+	Mat Resize(int trackBarValue);
 };
