@@ -5,7 +5,7 @@ using namespace cv;
 
 int main()
 {
-	Image* image = new Image("../Data/pano");
+	Image* image = new Image("test.jpg");
 
 	if (image->panorama() == EXIT_SUCCESS)
 	{

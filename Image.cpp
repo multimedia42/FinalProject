@@ -7,18 +7,18 @@ using namespace cv;
 // false = isFile
 bool isFolder(String path)
 {
-	size_t sizePath = path.length();
-	wchar_t* bufferPath = new wchar_t[sizePath + 1];
+    size_t sizePath = path.length();
+    wchar_t *bufferPath = new wchar_t[sizePath + 1];
 
-	MultiByteToWideChar(CP_ACP, 0, path.c_str(), sizePath, bufferPath, sizePath * sizeof(wchar_t));
-	bufferPath[sizePath] = 0;
+    MultiByteToWideChar(CP_ACP, 0, path.c_str(), sizePath, bufferPath, sizePath * sizeof(wchar_t));
+    bufferPath[sizePath] = 0;
 
-	WIN32_FIND_DATA FindFileData;
-	FindFirstFile(bufferPath, &FindFileData);
-	if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-		return true;
-	else
-		return false;
+    WIN32_FIND_DATA FindFileData;
+    FindFirstFile(bufferPath, &FindFileData);
+    if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+        return true;
+    else
+        return false;
 }
 
 Image::Image() {}
@@ -42,8 +42,8 @@ Image::Image(String srcPath)
 
 Image::~Image()
 {
-	for (auto src : srcMats)
-		src.release();
+    for (auto src : srcMats)
+        src.release();
     srcMat.release();
 }
 
@@ -60,5 +60,5 @@ int Image::panorama(Stitcher::Mode mode = Stitcher::PANORAMA)
 
 Mat Image::getDstMat()
 {
-	return dstMat;
+    return dstMat;
 }
