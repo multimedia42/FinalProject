@@ -82,7 +82,7 @@ int Image::resize(int size)
 		return EXIT_FAILURE;
 }
 
-int Image::panorama(Stitcher::Mode mode = Stitcher::PANORAMA)
+int Image::panorama(Stitcher::Mode mode)
 {
 	Ptr<Stitcher> stitcher = Stitcher::create(mode);
 	Stitcher::Status status = stitcher->stitch(srcMats, dstMat);
