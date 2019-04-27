@@ -1,5 +1,4 @@
 #pragma once
-#include "pch.h"
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <Windows.h>
@@ -9,19 +8,21 @@ using namespace cv;
 
 class Image
 {
-  private:
+private:
 	vector<Mat> srcMats;
 	Mat srcMat;
 	Mat dstMat;
 
-  public:
+public:
 	Image(String srcPath);
 	Image();
 	~Image();
+
 	int canny(int threshold);
+	int lighten(int intensity);
 	int panorama(Stitcher::Mode mode = Stitcher::PANORAMA);
+	int resize(int size);
+	void callback(int pos, void* data);
+
 	Mat getDstMat();
-	Mat getLightened(int trackBarValue);
-	Mat getResized(int trackBarValue);
-	;
 };

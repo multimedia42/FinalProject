@@ -1,10 +1,10 @@
-#include "pch.h"
 #include "Image.h"
-#include<opencv2/opencv.hpp>
-#include<Windows.h>
+
 using namespace std;
 using namespace cv;
 
+// true = isFolder
+// false = isFile
 bool isFolder(String path)
 {
 	size_t sizePath = path.length();
@@ -21,85 +21,90 @@ bool isFolder(String path)
 		return false;
 }
 
-// true = isFolder
-// false = isFile
+Image::Image() {}
 
 Image::Image(String srcPath)
 {
-    if (isFolder(srcPath))
-    {
-        vector<String> srcName;
+	if (isFolder(srcPath))
+	{
+		vector<String> srcName;
 
-        glob(srcPath, srcName, false);
-        for (auto src : srcName)
-        {
-            Mat mat = imread(src);
-            srcMats.push_back(mat);
-        }
-    }
-    else
-        srcMat = imread(srcPath);
+		glob(srcPath, srcName, false);
+		for (auto src : srcName)
+		{
+			Mat mat = imread(src);
+			srcMats.push_back(mat);
+		}
+	}
+	else
+	{
+		srcMat = imread(srcPath);
+		dstMat = srcMat;
+		if (!srcMat.empty())
+		{
+			cout << "input success" << endl;
+		}
+	}
 }
-Image::Image() {};
 
 Image::~Image()
 {
-    for (auto src : srcMats)
-        src.release();
-    srcMat.release();
+	for (auto src : srcMats)
+		src.release();
+	srcMat.release();
 }
-
-
 
 int Image::canny(int threshold)
 {
-    Mat GrayImage;
-    Mat CannyImage;
+	Mat GrayImage;
+	Mat CannyImage;
 
-    GrayImage.create(srcMat.size(), srcMat.type());
-    cvtColor(srcMat, GrayImage, COLOR_BGR2GRAY);
-    CannyImage.create(srcMat.size(), srcMat.type());
-    Canny(GrayImage, CannyImage, threshold, threshold * 3, 3);
-    dstMat = CannyImage;
-	if(!CannyImage.empty())
+	GrayImage.create(srcMat.size(), srcMat.type());
+	cvtColor(srcMat, GrayImage, COLOR_BGR2GRAY);
+	CannyImage.create(srcMat.size(), srcMat.type());
+	Canny(GrayImage, CannyImage, threshold, threshold * 3, 3);
+	dstMat = CannyImage;
+	if (!CannyImage.empty())
 		return EXIT_SUCCESS;
 	else
 		return EXIT_FAILURE;
 }
 
+int Image::lighten(int intensity)
+{
+	dstMat = Mat::zeros(srcMat.size(), srcMat.type());
+	srcMat.Mat::convertTo(dstMat, CV_8U, 1, intensity - 50);
+	if (NULL != dstMat.data)
+		return EXIT_SUCCESS;
+	else
+		return EXIT_FAILURE;
+}
+
+int Image::resize(int size)
+{
+	cv::resize(srcMat, dstMat, Size(0, 0), size / 100.0, size / 100.0, INTER_LINEAR);
+	if (NULL != dstMat.data)
+		return EXIT_SUCCESS;
+	else
+		return EXIT_FAILURE;
+}
+
+void Image::callback(int pos, void* data)
+{
+}
+
 int Image::panorama(Stitcher::Mode mode)
 {
-    Ptr<Stitcher> stitcher = Stitcher::create(mode);
-    Stitcher::Status status = stitcher->stitch(srcMats, dstMat);
+	Ptr<Stitcher> stitcher = Stitcher::create(mode);
+	Stitcher::Status status = stitcher->stitch(srcMats, dstMat);
 
-    if (status == Stitcher::OK)
-        return EXIT_SUCCESS;
-    else
-        return EXIT_FAILURE;
+	if (status == Stitcher::OK)
+		return EXIT_SUCCESS;
+	else
+		return EXIT_FAILURE;
 }
 
 Mat Image::getDstMat()
 {
-    return dstMat;
-}
-
-Mat Image::getLightened(int trackBarValue)
-{
-
-	Mat increase = Mat::zeros(srcMat.size(), srcMat.type());
-	srcMat.Mat::convertTo(increase, CV_8U, 1, trackBarValue - 50);
-	return increase;
-}
-
-
-
-Mat Image::getResized(int trackBarValue)
-{
-	Mat dstimg;
-
-	// Scaling the image	
-	double size = (double)trackBarValue / 100;
-	resize(srcMat, dstimg, Size(0, 0), size, size, INTER_LINEAR);
-
-	return dstimg;
+	return dstMat;
 }

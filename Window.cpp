@@ -1,36 +1,47 @@
-#include "pch.h"
 #include "Window.h"
-#include "Image.h"
-#include <opencv2/opencv.hpp>
+
 using namespace std;
 using namespace cv;
-
-Window::Window(Image image,string name){
-	windowName = name;
-	dstimg = image;
+Window::Window(Image image, string name)
+{
+	srcImage = image;
+	nameWindow = name;
 }
 
-   Window::~Window() {
-	   destroyWindow(windowName);
+Window::Window() {}
+
+
+Window::~Window()
+{
+	destroyWindow(nameWindow);
 }
 
-void Window::Show(){
-	imshow(windowName, dstimg.getDstMat());
-
+void Window::create()
+{
+	namedWindow(nameWindow);
 }
 
-void Window::createTeackBar(String trackBarName, int initialValue, int maxValue, cv::TrackbarCallback Callback) {
-	int tb = createTrackbar(trackBarName, windowName, &initialValue, maxValue, Callback, 0);
+void Window::show()
+{
+	imshow(nameWindow, srcImage.getDstMat());
 }
 
-void Window::resizeCallback(int initialValue, void* userdata) {
-	dstimg.getResized(initialValue);
+void Window::lightenCallback(int intensity, void *data)
+{
+	srcImage.lighten(intensity);
 }
 
-void Window::lightenCallback(int initialValue, void* userdata) {
-	dstimg.getLightened(initialValue);
+void Window::resizeCallback(int size, void *data)
+{
+	srcImage.resize(size);
 }
 
-/*cv::TrackbarCallback Window::cannyCallback(int initialValue, void* userdata) {
-	dstimg.getCannied(initialValue);
-}*/
+
+int Window::setTrackbar(function func)
+{
+	int pos = 1;
+	switch (func)
+	{
+	case(resize):createTrackbar(nameWindow + "_resize", nameWindow, &pos, 100,resizeCallback); break;
+	}
+}
