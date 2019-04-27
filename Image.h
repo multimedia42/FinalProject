@@ -8,17 +8,20 @@ using namespace cv;
 
 class Image
 {
-  private:
+private:
 	vector<Mat> srcMats;
 	Mat srcMat;
 	Mat dstMat;
 
-  public:
+public:
 	Image(String srcPath);
 	Image();
 	~Image();
 
-	int panorama(Stitcher::Mode mode = Stitcher::PANORAMA);
 	int canny(int threshold);
+	int lighten(int intensity);
+	int panorama(Stitcher::Mode mode = Stitcher::PANORAMA);
+	int resize(int size);
+
 	Mat getDstMat();
 };
