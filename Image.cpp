@@ -39,11 +39,6 @@ Image::Image(String srcPath)
 	else
 	{
 		srcMat = imread(srcPath);
-		dstMat = srcMat;
-		if (!srcMat.empty())
-		{
-			cout << "input success" << endl;
-		}
 	}
 }
 
@@ -87,10 +82,6 @@ int Image::resize(int size)
 		return EXIT_SUCCESS;
 	else
 		return EXIT_FAILURE;
-}
-
-void Image::callback(int pos, void* data)
-{
 }
 
 int Image::panorama(Stitcher::Mode mode)

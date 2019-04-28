@@ -22,7 +22,5 @@ public:
 	int lighten(int intensity);
 	int panorama(Stitcher::Mode mode = Stitcher::PANORAMA);
 	int resize(int size);
-	void callback(int pos, void* data);
-
 	Mat getDstMat();
 };
