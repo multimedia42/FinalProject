@@ -36,19 +36,43 @@ void Window::lightenCallback(int intensity, void *data)
 
 void Window::resizeCallback(int size, void* data)
 {
+	if (size < 1)
+		size = 1;
 	Window* p = (Window*)data;
 	p->srcImage.resize(size);
 	//srcImage.resize(size);
 }
 
-void Window::settrackbar()
+void Window::settrackbar(int function)
 {
-	int pos = 50;
-	createTrackbar(nameWindow + "1", nameWindow, &pos, 100, lightenCallback,this);
-	while (true)
+	switch (function)
 	{
-		imshow(nameWindow, srcImage.getDstMat());
-		waitKey(10);
+	case(1):
+		{
+			int pos = 50;
+			namedWindow("trackbar");
+			createTrackbar("trackbar resize", "trackbar", &pos, 100, resizeCallback, this);
+			while (true)
+			{
+				imshow(nameWindow, srcImage.getDstMat());
+				if (char c = waitKey(10) == 27)
+					break;
+			}
+			break;
+		}
+	case(2):
+		{
+			int pos = 50;
+			namedWindow("trackbar");
+			createTrackbar("trackbar lighten", "trackbar", &pos, 100, lightenCallback, this);
+			while (true)
+			{
+				imshow(nameWindow, srcImage.getDstMat());
+				if (char c = waitKey(10) == 27)
+					break;
+			}
+			break;
+		}
 	}
 }
 

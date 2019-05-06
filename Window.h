@@ -23,5 +23,5 @@ public:
 	void show();
 	static void lightenCallback(int intensity, void *data);
 	static void resizeCallback(int size, void *data);
-	void settrackbar();
+	void settrackbar(int function);
 };

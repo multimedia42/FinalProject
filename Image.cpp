@@ -39,7 +39,7 @@ Image::Image(String srcPath)
 	else
 	{
 		srcMat = imread(srcPath);
-		dstMat = srcMat;
+		dstMat = srcMat.clone();
 	}
 }
 
@@ -70,10 +70,7 @@ int Image::lighten(int intensity)
 {
 	
 	//dstMat = Mat::zeros(srcMat.size(), srcMat.type());
-	dstMat.Mat::convertTo(dstMat, CV_8U, 1, intensity-50);
-	namedWindow("2");
-	imshow("2", srcMat);
-	waitKey(10);
+	srcMat.Mat::convertTo(dstMat, CV_8U, 1, (double)intensity-50);
 	if (NULL != dstMat.data)
 		return EXIT_SUCCESS;
 	else
@@ -82,7 +79,7 @@ int Image::lighten(int intensity)
 
 int Image::resize(int size)
 {
-	cv::resize(srcMat, dstMat, Size(0, 0), size / 100.0, size / 100.0, INTER_LINEAR);
+	cv::resize(srcMat, dstMat, Size(0, 0), size*2/ 100.0, size*2/ 100.0, INTER_LINEAR);
 	if (NULL != dstMat.data)
 		return EXIT_SUCCESS;
 	else
