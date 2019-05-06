@@ -11,10 +11,9 @@ class Window
 {
 private:
 	String nameWindow;
-	static Image srcImage;
+	Image srcImage;
 
 public:
-	enum function { resize, lighten };
 	Window(Image image, string name);
 	Window();
 	~Window();
@@ -22,8 +21,7 @@ public:
 	void create();
 
 	void show();
-	void lightenCallback(int intensity, void *data);
+	static void lightenCallback(int intensity, void *data);
 	static void resizeCallback(int size, void *data);
-
-	int setTrackbar(function func);
+	void settrackbar();
 };

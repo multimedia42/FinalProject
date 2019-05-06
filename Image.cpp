@@ -39,6 +39,7 @@ Image::Image(String srcPath)
 	else
 	{
 		srcMat = imread(srcPath);
+		dstMat = srcMat;
 	}
 }
 
@@ -67,8 +68,12 @@ int Image::canny(int threshold)
 
 int Image::lighten(int intensity)
 {
-	dstMat = Mat::zeros(srcMat.size(), srcMat.type());
-	srcMat.Mat::convertTo(dstMat, CV_8U, 1, intensity - 50);
+	
+	//dstMat = Mat::zeros(srcMat.size(), srcMat.type());
+	dstMat.Mat::convertTo(dstMat, CV_8U, 1, intensity-50);
+	namedWindow("2");
+	imshow("2", srcMat);
+	waitKey(10);
 	if (NULL != dstMat.data)
 		return EXIT_SUCCESS;
 	else

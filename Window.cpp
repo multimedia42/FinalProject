@@ -1,7 +1,8 @@
 #include "Window.h"
-
+#include"Image.h"
 using namespace std;
 using namespace cv;
+
 Window::Window(Image image, string name)
 {
 	srcImage = image;
@@ -28,20 +29,28 @@ void Window::show()
 
 void Window::lightenCallback(int intensity, void *data)
 {
-	srcImage.lighten(intensity);
+	Window* p = (Window*)data;
+	p->srcImage.lighten(intensity);
+	//srcImage.lighten(intensity);
 }
 
-void Window::resizeCallback(int size, void *data)
+void Window::resizeCallback(int size, void* data)
 {
-	srcImage.resize(size);
+	Window* p = (Window*)data;
+	p->srcImage.resize(size);
+	//srcImage.resize(size);
 }
 
-
-int Window::setTrackbar(function func)
+void Window::settrackbar()
 {
-	int pos = 1;
-	switch (func)
+	int pos = 50;
+	createTrackbar(nameWindow + "1", nameWindow, &pos, 100, lightenCallback,this);
+	while (true)
 	{
-	case(resize):createTrackbar(nameWindow + "_resize", nameWindow, &pos, 100,resizeCallback); break;
+		imshow(nameWindow, srcImage.getDstMat());
+		waitKey(10);
 	}
 }
+
+
+
