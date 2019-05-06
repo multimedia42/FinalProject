@@ -22,6 +22,8 @@ public:
 	int lighten(int intensity);
 	int panorama(Stitcher::Mode mode = Stitcher::PANORAMA);
 	int resize(int size);
+	int dilation(int value);
+	int erosion(int value);
 
 	Mat getDstMat();
 };
