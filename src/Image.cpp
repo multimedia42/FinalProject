@@ -93,6 +93,33 @@ int Image::panorama(Stitcher::Mode mode)
 		return EXIT_FAILURE;
 }
 
+int Image::dilation(int value) {
+	if (value <= 0) {
+		value = 1;
+	}
+	Mat mask = getStructuringElement(MORPH_RECT, Size(value, value));
+
+	dilate(srcMat, dstMat, mask);
+	if (NULL != dstMat.data)
+		return EXIT_SUCCESS;
+	else
+		return EXIT_FAILURE;
+}
+
+int Image::erosion(int value) {
+	if (value <= 0) {
+		value = 1;
+	}
+
+	Mat mask = getStructuringElement(MORPH_RECT, Size(value, value));
+	erode(srcMat, dstMat, mask);
+
+	if (NULL != dstMat.data)
+		return EXIT_SUCCESS;
+	else
+		return EXIT_FAILURE;
+}
+
 Mat Image::getDstMat()
 {
 	return dstMat;
