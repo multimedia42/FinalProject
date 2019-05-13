@@ -6,6 +6,7 @@
 using namespace std;
 using namespace cv;
 
+
 class Window
 {
 private:
@@ -17,9 +18,12 @@ public:
 	Window();
 	~Window();
 
-	void show();
-	void lightenCallback(int intensity, void *data);
-	void resizeCallback(int size, void *data);
+	void create();
 
-	int setTrackbar(String nameTrackbar, int initValue, int maxValue, TrackbarCallback callback);
+	void show();
+	static void lightenCallback(int intensity, void *data);
+	static void resizeCallback(int size, void *data);
+	static void dilationCallback(int value, void *data);
+	static void erosionCallback(int value, void *data);
+	void settrackbar();
 };

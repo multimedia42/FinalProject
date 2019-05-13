@@ -24,6 +24,5 @@ public:
 	int resize(int size);
 	int dilation(int value);
 	int erosion(int value);
-
 	Mat getDstMat();
 };
