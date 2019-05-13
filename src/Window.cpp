@@ -68,6 +68,8 @@ void Window::settrackbar(trackbarMode mode)
 	String trackbarWindow("trackbar window");
 	namedWindow(trackbarWindow);
 	
+	//imshow(nameWindow, srcImage.getDstMat());
+
 	switch (mode) {
 	case lightenTrackbar:
 		pos = 100;
@@ -90,7 +92,8 @@ void Window::settrackbar(trackbarMode mode)
 	{
 		this->show();
 		if (waitKey(10) == 27) {
-			destroyAllWindows();
+			//destroyAllWindows();
+			destroyWindow(trackbarWindow);
 			break;
 		}
 	}
