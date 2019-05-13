@@ -12,9 +12,11 @@ private:
 	vector<Mat> srcMats;
 	Mat srcMat;
 	Mat dstMat;
+	//VideoCapture vidSrc;
 
 public:
 	Image(String srcPath);
+	//Image(String srcPath, String vidSrcPath);
 	Image();
 	~Image();
 

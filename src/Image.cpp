@@ -43,6 +43,28 @@ Image::Image(String srcPath)
 	}
 }
 
+/*Image::Image(String srcPath, String vidSrcPath)
+{
+	if (isFolder(srcPath))
+	{
+		vector<String> srcName;
+
+		glob(srcPath, srcName, false);
+		for (auto src : srcName)
+		{
+			Mat mat = imread(src);
+			srcMats.push_back(mat);
+		}
+	}
+	else
+	{
+		srcMat = imread(srcPath);
+		srcMat.Mat::copyTo(dstMat);
+	}
+
+	vidSrc = VideoCapture(vidSrcPath);
+}*/
+
 Image::~Image()
 {
 	for (auto src : srcMats)
@@ -71,8 +93,8 @@ int Image::lighten(int intensity)
 	
 	//dstMat = Mat::zeros(srcMat.size(), srcMat.type());
 	srcMat.Mat::convertTo(dstMat, CV_8U, 1, intensity-50);
-	namedWindow("2");
-	imshow("2", srcMat);
+	//namedWindow("2");
+	//imshow("2", srcMat);
 	//waitKey(10);
 	if (NULL != dstMat.data)
 		return EXIT_SUCCESS;

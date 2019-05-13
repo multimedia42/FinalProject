@@ -6,6 +6,7 @@
 using namespace std;
 using namespace cv;
 
+enum trackbarMode{cannyTrackbar, lightenTrackbar, resizeTrackbar, dilateTrackbar, erodeTrackbar};
 
 class Window
 {
@@ -23,7 +24,7 @@ public:
 	void show();
 	static void lightenCallback(int intensity, void *data);
 	static void resizeCallback(int size, void *data);
-	static void dilationCallback(int value, void *data);
-	static void erosionCallback(int value, void *data);
-	void settrackbar();
+	static void dilateCallback(int value, void *data);
+	static void erodeCallback(int value, void *data);
+	void settrackbar(trackbarMode mode);
 };

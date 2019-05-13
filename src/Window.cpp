@@ -3,8 +3,6 @@
 using namespace std;
 using namespace cv;
 
-
-
 Window::Window(Image image, string name)
 {
 	srcImage = image;
@@ -45,7 +43,7 @@ void Window::resizeCallback(int size, void* data)
 	//srcImage.resize(size);
 }
 
-void Window::dilationCallback(int value, void *data) {
+void Window::dilateCallback(int value, void *data) {
 	
 	Window* p = (Window*)data;
 	if (value <= 0) {
@@ -54,7 +52,7 @@ void Window::dilationCallback(int value, void *data) {
 	p->srcImage.dilation(value);
 }
 
-void Window::erosionCallback(int value, void *data) {
+void Window::erodeCallback(int value, void *data) {
 
 	Window* p = (Window*)data;
 	if (value <= 0) {
@@ -63,12 +61,31 @@ void Window::erosionCallback(int value, void *data) {
 	p->srcImage.erosion(value);
 }
 
-
-void Window::settrackbar()
+void Window::settrackbar(trackbarMode mode)
 {
-	namedWindow(nameWindow + "1");
-	int pos = 50;
-	createTrackbar(nameWindow + "1", nameWindow+"1", &pos, 200, erosionCallback, this);
+	int pos;
+	String trackbarName("trackbar");
+	String trackbarWindow("trackbar window");
+	namedWindow(trackbarWindow);
+	
+	switch (mode) {
+	case lightenTrackbar:
+		pos = 100;
+		createTrackbar(trackbarName, trackbarWindow, &pos, 200, lightenCallback, this);
+		break;
+	case resizeTrackbar:
+		pos = 150;
+		createTrackbar(trackbarName, trackbarWindow, &pos, 300, resizeCallback, this);
+		break;
+	case dilateTrackbar:
+		pos = 1;
+		createTrackbar(trackbarName, trackbarWindow, &pos, 50, dilateCallback, this);
+		break;
+	case erodeTrackbar:
+		pos = 1;
+		createTrackbar(trackbarName, trackbarWindow, &pos, 50, erodeCallback, this);
+		break;
+	}	
 	while (true)
 	{
 		this->show();
