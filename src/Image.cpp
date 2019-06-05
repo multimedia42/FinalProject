@@ -65,9 +65,11 @@ int Image::canny(int threshold)
 
 int Image::lighten(int intensity)
 {
+	if (!dstMat.empty())
+		dstMat.release();
 	dstMat = Mat::zeros(srcMat.size(), srcMat.type());
 	srcMat.Mat::convertTo(dstMat, CV_8U, 1, intensity - 50);
-	if (NULL != dstMat.data)
+	if (!dstMat.empty())
 		return EXIT_SUCCESS;
 	else
 		return EXIT_FAILURE;
@@ -75,8 +77,10 @@ int Image::lighten(int intensity)
 
 int Image::resize(int size)
 {
+	if (!dstMat.empty())
+		dstMat.release();
 	cv::resize(srcMat, dstMat, Size(0, 0), size / 100.0, size / 100.0, INTER_LINEAR);
-	if (NULL != dstMat.data)
+	if (!dstMat.empty())
 		return EXIT_SUCCESS;
 	else
 		return EXIT_FAILURE;
@@ -93,28 +97,33 @@ int Image::panorama(Stitcher::Mode mode)
 		return EXIT_FAILURE;
 }
 
-int Image::dilation(int value) {
-	if (value <= 0) {
-		value = 1;
-	}
-	Mat mask = getStructuringElement(MORPH_RECT, Size(value, value));
+int Image::dilation(int size)
+{
+	if (!dstMat.empty())
+		dstMat.release();
+	if (size <= 0)
+		size = 1;
+
+	Mat mask = getStructuringElement(MORPH_RECT, Size(size, size));
 
 	dilate(srcMat, dstMat, mask);
-	if (NULL != dstMat.data)
+	if (!dstMat.empty())
 		return EXIT_SUCCESS;
 	else
 		return EXIT_FAILURE;
 }
 
-int Image::erosion(int value) {
-	if (value <= 0) {
-		value = 1;
-	}
+int Image::erosion(int size)
+{
+	if (!dstMat.empty())
+		dstMat.release();
+	if (size <= 0)
+		size = 1;
 
-	Mat mask = getStructuringElement(MORPH_RECT, Size(value, value));
+	Mat mask = getStructuringElement(MORPH_RECT, Size(size, size));
+
 	erode(srcMat, dstMat, mask);
-
-	if (NULL != dstMat.data)
+	if (!dstMat.empty())
 		return EXIT_SUCCESS;
 	else
 		return EXIT_FAILURE;
