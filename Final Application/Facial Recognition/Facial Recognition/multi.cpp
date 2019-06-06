@@ -302,6 +302,9 @@ int main()
 
 				if (fileExist) {//if there is already a face.xml file that contains remembered faces
 					model = Algorithm::load<LBPHFaceRecognizer>("face.xml"); //load that file
+					if (model->empty) {
+						model = LBPHFaceRecognizer::create();
+					}
 				}
 				else { //if there aren't any previous face.xml files
 					model = LBPHFaceRecognizer::create();//create one
