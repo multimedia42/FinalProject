@@ -4,6 +4,7 @@
 #include"Image.h"
 #include"cvui.h"
 #include"Window.h"
+#include "face_recognition.h"
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/face.hpp>
@@ -14,10 +15,6 @@
 using namespace std;
 using namespace cv;
 using namespace face;
-
-string cascadeName;
-
-Ptr<FaceRecognizer> model;
 
 int workspace_row = 700;
 int workspace_col = 1000;
@@ -35,38 +32,6 @@ double Min(double x, double y)
 	return((x < y) ? x : y);
 }
 
-vector<Rect> recognize_face(Mat& img, CascadeClassifier& cascade,
-	double scale)
-{
-	vector<Rect> faces, faces2;
-	vector<Mat> images;
-	vector<int> labels;
-	const static Scalar colors[] =
-	{
-		Scalar(255,0,0),
-		Scalar(255,128,0),
-		Scalar(255,255,0),
-		Scalar(0,255,0),
-		Scalar(0,128,255),
-		Scalar(0,255,255),
-		Scalar(0,0,255),
-		Scalar(255,0,255)
-	};
-	Mat gray, smallImg;
-
-	//cvtColor(img, gray, COLOR_BGR2GRAY);
-	gray = img.clone(); //alternative by not converting to grey
-	double fx = 1 / scale;
-	resize(gray, smallImg, Size(), fx, fx, INTER_LINEAR_EXACT);
-	//equalizeHist(smallImg, smallImg);
-
-	cascade.detectMultiScale(smallImg, faces,
-		1.1, 2, 0
-		| CASCADE_SCALE_IMAGE,
-		Size(30, 30));
-
-	return faces;
-}
 
 int main()
 {
@@ -95,9 +60,9 @@ int main()
 	Rect rect;
 	Mat src;
 
-	cv::Point anchor;
-	cv::Rect roi;
-
+	//declaration for face recognition
+	Ptr<FaceRecognizer> model;
+	string cascadeName;
 	vector<Rect> faces;
 	CascadeClassifier cascade;
 	cascadeName = "data/haarcascades/haarcascade_frontalface_alt.xml";
@@ -139,102 +104,7 @@ int main()
 					cvui::printf(frame, 5, 22, 0.5, 0xff0000, "Input its name on the terminal.");
 
 					if (!faces.empty()) { //if there are faces in the image
-						for (size_t i = 0; i < faces.size(); i++) //for all faces
-						{
-							Rect r = faces[i];
-							Point center;
-							Scalar face_color(255, 0, 0); //blue
-							int radius;
-							bool save_face = false;
-							double aspect_ratio = (double)r.width / r.height;
-
-							//get the rectangle of the face
-							Rect found_face(Point(cvRound(r.x*scale), cvRound(r.y*scale)), Point(cvRound((r.x + r.width - 1)*scale), cvRound((r.y + r.height - 1)*scale)));
-
-							//convert to gray to train the FaceRecognizer
-							Mat gray;
-							cvtColor(Mat(frame, found_face), gray, COLOR_BGR2GRAY);
-
-							//get the circle of the face
-							center.x = cvRound((r.x + r.width*0.5)*scale);
-							center.y = cvRound((r.y + r.height*0.5)*scale);
-							radius = cvRound((r.width + r.height)*0.25*scale);
-
-							//if the user clicks on a face
-							if (cvui::mouse(cvui::LEFT_BUTTON, cvui::DOWN)) {
-								Point mouse_point(cvui::mouse().x, cvui::mouse().y);								
-								if (0.75 < aspect_ratio && aspect_ratio < 1.3) {
-									Point diff = mouse_point - center;
-									int distance = (int)sqrt(diff.x*diff.x + diff.y*diff.y);
-									if (distance < radius) {
-										save_face = true;
-									}
-								}
-								else if (mouse_point.inside(r))
-								{
-									save_face = true;
-								}
-								if(save_face){
-									//save the face
-									string face_name;
-									cout << "Input name of face:" << endl;
-									getline(cin, face_name);
-
-									vector<Mat> images;
-									vector<int> labels;
-									int predicted;
-									if (!model->empty()) {
-										predicted = model->predict(gray);
-
-										if (predicted == -1) {
-											vector<int> match = model->getLabelsByString(face_name);
-											if (match.size() > 1) {
-												for (size_t j = 0; j < match.size(); j++) {
-													int match_label = match[j];
-													String match_name = model->getLabelInfo(match_label);
-													if (match_name == face_name) {
-														predicted = match_label;
-													}
-												}
-											}
-											else if (match.size() == 1) {
-												predicted = match.front();
-											}
-											else {
-												for (i = 0; !model->getLabelInfo(i).empty(); i++);
-												predicted = i;
-											}
-										}
-									}
-									else {
-										predicted = 0;
-									}
-									labels.push_back(predicted);
-									images.push_back(gray);
-									model->update(images, labels);
-									model->setLabelInfo(predicted, face_name);
-								
-								}
-							}
-
-							int predicted;
-							if (!model->empty()) {
-								predicted = model->predict(gray);
-								if (predicted != -1) {
-									String label_info = model->getLabelInfo(predicted);
-									cvui::printf(frame, (int)center.x, (int)center.y + radius + 10, 0.7, 0x0000ff, "%s", label_info.c_str());
-								}
-							}
-
-							if (0.75 < aspect_ratio && aspect_ratio < 1.3)
-							{
-								circle(frame, center, radius, face_color, 3, 8, 0);
-							}
-							else {
-								rectangle(frame, found_face, face_color, 3, 8, 0);
-							}
-						}
-
+						save_and_draw_face(model, faces, frame, scale);
 					}
 				}
 				
@@ -293,23 +163,7 @@ int main()
 			}
 			else { //else if face mode is not active and face button is clicked
 				use_face_recognition = true; //start face recognition mode
-				boolean fileExist = false;
-				ifstream ifs("face.xml");
-				if (ifs.is_open()) {
-					fileExist = true;
-				}
-				ifs.close();
-
-				if (fileExist) {//if there is already a face.xml file that contains remembered faces
-					model = Algorithm::load<LBPHFaceRecognizer>("face.xml"); //load that file
-					if (model->empty) {
-						model = LBPHFaceRecognizer::create();
-					}
-				}
-				else { //if there aren't any previous face.xml files
-					model = LBPHFaceRecognizer::create();//create one
-				}
-				model->setThreshold(50.0);
+				init_face(model);
 				faces = vector<Rect>(recognize_face(frame, cascade, scale)); //get all the faces from the image
 			}
 		}
