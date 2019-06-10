@@ -1,0 +1,17 @@
+﻿  multi.cpp
+  cvui.h: compiling implementation because of CVUI_IMPLEMENTATION. See: https://dovyski.github.io/cvui/usage/
+D:\FrenchCourse\multi\11\final_project\final_project\Video.h(15): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
+D:\FrenchCourse\multi\11\final_project\final_project\Video.h(16): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
+D:\FrenchCourse\multi\11\final_project\final_project\multi.cpp(178): warning C4244: “参数”: 从“int”转换到“_Tp”，可能丢失数据
+          with
+          [
+              _Tp=float
+          ]
+D:\FrenchCourse\multi\11\final_project\final_project\multi.cpp(398): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
+D:\FrenchCourse\multi\11\final_project\final_project\multi.cpp(399): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
+D:\FrenchCourse\multi\11\final_project\final_project\multi.cpp(424): warning C4244: “参数”: 从“int”转换到“_Tp”，可能丢失数据
+          with
+          [
+              _Tp=float
+          ]
+  final_project.vcxproj -> D:\FrenchCourse\multi\11\final_project\x64\Debug\final_project.exe
