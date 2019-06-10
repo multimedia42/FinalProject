@@ -69,9 +69,9 @@ int main()
 	int dilate_value = 1;
 	int erode_value = 1;
 	bool use_canny = false;
-	bool use_face_recognition = false;
+	bool use_camera = false;
 	bool isvideo = false;
-	bool record = false;
+	bool use_face = false;
 	bool outputDone = false;
 
 	int image_row = workspace_row;
@@ -91,20 +91,22 @@ int main()
 	Ptr<FaceRecognizer> model;
 	vector<Rect> faces;
 	CascadeClassifier cascade;
-	cascadeName = "data/haarcascades/haarcascade_frontalface_alt.xml";
-	if (!cascade.load(samples::findFile(cascadeName)))
+	cascadeName = "data\\haarcascades\\haarcascade_frontalface_alt.xml";
+	if (!cascade.load(cascadeName))
 	{
 		cerr << "ERROR: Could not load classifier cascade" << endl;
 		return -1;
 	}
 	double scale = 1;
 
+	init_face(model);
+
 	while (cv::waitKey(30) != 27) {
 		Mat dst;
 		Mat clear;
-		if (use_face_recognition == true)
+		if (use_camera == true)
 		{
-			if (record == false)
+			if (use_face == false)
 			{
 				camera >> src;
 				src.copyTo(dst);
@@ -122,6 +124,9 @@ int main()
 				src.copyTo(dst);
 				combined.copyTo(clear);
 
+				use_camera = false;
+				camera.release();
+
 				SetRect(rect, dst);
 				dst.copyTo(clear(rect));
 				clear.copyTo(pic);
@@ -129,15 +134,14 @@ int main()
 
 				faces = vector<Rect>(recognize_face(frame, cascade, scale));
 
-				if (use_face_recognition) { //if face recognition mode is active
-					cvui::printf(frame, 5, 5, 0.5, 0xff0000, "Click on the face you would like to save.");
-					cvui::printf(frame, 5, 22, 0.5, 0xff0000, "Input its name on the terminal.");
+				//if face recognition mode is active
+				cvui::printf(frame, 5, 5, 0.5, 0xff0000, "Click on the face you would like to save.");
+				cvui::printf(frame, 5, 22, 0.5, 0xff0000, "Input its name on the terminal.");
 
-					if (!faces.empty())
-					{
-						save_and_draw_face(model, faces, frame, scale);
-					}
-				}
+				if (!faces.empty())
+				{
+					save_and_predict_face(model, faces, frame, scale);
+				}				
 			}
 			
 
@@ -154,6 +158,10 @@ int main()
 				video.getCap() >> src;
 				src.copyTo(dst);
 				combined.copyTo(clear);
+
+				if (use_face) {
+					isvideo = false;
+				}
 			}
 			if (!dst.empty())
 			{
@@ -170,43 +178,59 @@ int main()
 				Point2f center(dst.cols / 2, dst.rows / 2);
 				M = getRotationMatrix2D(center, angle, 1);
 				warpAffine(dst, dst, M, dst.size());
+
+
 				blur = 1;
 				if (blur3) {
 					blur = 3;
-					cvui::checkbox(frame, workspace_col + 100, workspace_row - 240, "5*5", &blur5);
+					cvui::checkbox(frame, workspace_col + 100, workspace_row - 250, "5*5", &blur5);
 					if (blur5 == true)
 					{
-						cvui::checkbox(frame, workspace_col + 100, workspace_row - 240, "5*5", &blur5);
+						cvui::checkbox(frame, workspace_col + 100, workspace_row - 250, "5*5", &blur5);
 						blur3 = false;
 						blur = 5;
 					}
 				}
-
 				else if (blur5) {
 					blur = 5;
-					cvui::checkbox(frame, workspace_col + 30, workspace_row - 240, "3*3", &blur3);
+					cvui::checkbox(frame, workspace_col + 30, workspace_row - 250, "3*3", &blur3);
 					if (blur3 == true)
 					{
-						cvui::checkbox(frame, workspace_col + 30, workspace_row - 240, "3*3", &blur3);
+						cvui::checkbox(frame, workspace_col + 30, workspace_row - 250, "3*3", &blur3);
 						blur5 = false;
 						blur = 3;
 					}
 				}
-
 				if (!blur3 && !blur5)
 				{
 					blur = 1;
 				}
 				cv::blur(dst, dst, Size(blur, blur), Point(-1, -1), BORDER_DEFAULT);
 
+
 				gaussian = 1;
 				if (gaussian3) {
 					gaussian = 3;
+					cvui::checkbox(frame, workspace_col + 240, workspace_row - 250, "5*5", &gaussian5);
+					if (gaussian5 == true)
+					{
+						cvui::checkbox(frame, workspace_col + 240, workspace_row - 250, "5*5", &gaussian5);
+						gaussian3 = false;
+						gaussian = 5;
+					}
 				}
 				else if (gaussian5) {
 					gaussian = 5;
+					cvui::checkbox(frame, workspace_col + 170, workspace_row - 250, "3*3", &gaussian3);
+					if (gaussian3 == true)
+					{
+						cvui::checkbox(frame, workspace_col + 170, workspace_row - 250, "3*3", &gaussian3);
+						gaussian5 = false;
+						gaussian = 3;
+					}
 				}
-				else {
+				if (!gaussian3 && !gaussian5)
+				{
 					gaussian = 1;
 				}
 				GaussianBlur(dst, dst, Size(gaussian, gaussian), 0, 0, BORDER_DEFAULT);
@@ -224,17 +248,15 @@ int main()
 				clear.copyTo(pic);
 				pic.copyTo(frame);
 
-				if (use_face_recognition) { //if face recognition mode is active
+				if (use_face) { //if face recognition mode is active
 					cvui::printf(frame, 5, 5, 0.5, 0xff0000, "Click on the face you would like to save.");
 					cvui::printf(frame, 5, 22, 0.5, 0xff0000, "Input its name on the terminal.");
 
 					if (!faces.empty())
 					{
-						save_and_draw_face(model, faces, frame, scale);
+						save_and_predict_face(model, faces, frame, scale);
 					}
 				}
-
-
 			}
 		}
 
@@ -294,11 +316,10 @@ int main()
 			gaussian3 = false;
 			gaussian5 = false;
 
-			if (use_face_recognition)
+			if (use_camera)
 			{
-				use_face_recognition = false;
+				use_camera = false;
 				camera.release();
-				model->save("face.xml");
 			}
 		}
 		if (cvui::button(frame, workspace_col + 30, workspace_row-90,80,30, "import")) {
@@ -322,11 +343,14 @@ int main()
 			gaussian3 = false;
 			gaussian5 = false;
 
-			if (use_face_recognition)
+			if (use_face) {
+				use_face = false;
+			}
+
+			if (use_camera)
 			{
-				use_face_recognition = false;
+				use_camera = false;
 				camera.release();
-				model->save("face.xml");
 			}
 		}
 
@@ -351,13 +375,15 @@ int main()
 			gaussian3 = false;
 			gaussian5 = false;
 
-			if (use_face_recognition)
-			{
-				use_face_recognition = false;
-				camera.release();
-				model->save("face.xml");
+			if (use_face) {
+				use_face = false;
 			}
 
+			if (use_camera)
+			{
+				use_camera = false;
+				camera.release();
+			}
 		}
 
 		if (cvui::button(frame, workspace_col + 30, workspace_row - 50, 80, 30, "export")) {
@@ -430,31 +456,33 @@ int main()
 		}
 
 
-		if (cvui::button(frame, workspace_col + 120, workspace_row - 50, 80, 30, "faces")) {//face button interaction
-			if (use_face_recognition) { //if face mode already activated and clicked again
-				use_face_recognition = false;
-				camera.release();
-				model->save("face.xml"); //end face recognition mode and save all faces in face.xml
+		if (cvui::button(frame, workspace_col + 120, workspace_row - 50, 80, 30, "camera")) {//face button interaction
+			if (use_camera) { //if face mode already activated and clicked again
+				use_camera = false;
+				camera.release();//end face recognition mode and save all faces in face.xml
 			}
 			else { //else if face mode is not active and face button is clicked
-				use_face_recognition = true; //start face recognition mode
+				if (use_face) {
+					use_face = false;
+				}
+				use_camera = true; //start face recognition mode
 				camera.open(0);
 				rate = 25.0;  //frame rate of video
 				videoSize = Size((int)camera.get(CAP_PROP_FRAME_WIDTH), (int)camera.get(CAP_PROP_FRAME_HEIGHT));
-				init_face(model);
 				//faces = vector<Rect>(recognize_face(frame, cascade, scale));
 			}
 		}
 
-		if (cvui::button(frame, workspace_col + 210, workspace_row - 50, 80, 30, "set face"))
+		if (cvui::button(frame, workspace_col + 210, workspace_row - 50, 80, 30, "face"))
 		{
-			if (record)
-				record = false;
+			if (use_face) {
+				use_face = false;
+			}
 			else
 			{
 				camera >> key_face;
-				record = true;
-
+				use_face = true;
+				faces = recognize_face(frame, cascade, scale);
 			}
 		}
 
@@ -462,7 +490,6 @@ int main()
 
 		cvui::imshow(WINDOW_NAME, frame);
 	}
-	if(use_face_recognition)
-	model->save("face.xml");
+
 	return 0;
 }

@@ -45,15 +45,11 @@ void init_face(Ptr<FaceRecognizer>& model) {
 	model->setThreshold(50.0);
 }
 
-void save_and_draw_face(Ptr<FaceRecognizer>& model, vector<Rect> faces, Mat& frame, double scale) {
+void save_and_predict_face(Ptr<FaceRecognizer>& model, vector<Rect> faces, Mat& frame, double scale) {
 	for (size_t i = 0; i < faces.size(); i++) //for all faces
 	{
 		Rect r = faces[i];
-		Point center;
-		Scalar face_color(255, 0, 0); //blue
-		int radius;
-		bool save_face = false;
-		double aspect_ratio = (double)r.width / r.height;
+		bool save = false;
 
 		//get the rectangle of the face
 		Rect found_face(Point(cvRound(r.x*scale), cvRound(r.y*scale)), Point(cvRound((r.x + r.width - 1)*scale), cvRound((r.y + r.height - 1)*scale)));
@@ -62,88 +58,84 @@ void save_and_draw_face(Ptr<FaceRecognizer>& model, vector<Rect> faces, Mat& fra
 		Mat gray;
 		cvtColor(Mat(frame, found_face), gray, COLOR_BGR2GRAY);
 
-		//get the circle of the face
-		center.x = cvRound((r.x + r.width*0.5)*scale);
-		center.y = cvRound((r.y + r.height*0.5)*scale);
-		radius = cvRound((r.width + r.height)*0.25*scale);
-
 		//if the user clicked on the face
 		if (cvui::mouse(cvui::LEFT_BUTTON, cvui::DOWN)) {
 			Point mouse_point(cvui::mouse().x, cvui::mouse().y);
-			if (0.75 < aspect_ratio && aspect_ratio < 1.3) {
-				Point diff = mouse_point - center;
-				int distance = (int)sqrt(diff.x*diff.x + diff.y*diff.y);
-				if (distance < radius) {
-					save_face = true;
-				}
-			}
-			else if (mouse_point.inside(r))
+			if (mouse_point.inside(found_face))
 			{
-				save_face = true;
+				save = true;
 			}
-			if (save_face) {
+			if (save) {
 				//save the face
-				string face_name;
-				//get the name of the face as input
-				cout << "Input name of face:" << endl;
-				getline(cin, face_name);
-
-				vector<Mat> images;
-				vector<int> labels;
-				int face_label;
-				bool found_match = false;
-				//if there are already saved faces
-				if (!model->empty()) {
-					vector<int> match = model->getLabelsByString(face_name);
-					//if there are more than 1 matching strings including the name as substring
-					if (match.size() >= 1) {
-						for (size_t j = 0; j < match.size(); j++) {
-							int match_label = match[j];
-							String match_name = model->getLabelInfo(match_label);
-							//search for the exact same name and set face_label
-							if (match_name == face_name) {
-								face_label = match_label;
-								found_match = true;
-								break;
-							}
-						}
-					}
-					//if there are no matches give the face an empty label
-					if (!found_match) {
-						for (i = 0; !model->getLabelInfo(i).empty(); i++);
-						face_label= i;
-					}	
-				}
-				//else if model is empty this is the first face to remember so predicted = 0
-				else {
-					face_label = 0;
-				}
-				labels.push_back(face_label);
-				images.push_back(gray);
-				//train the face recognizer
-				model->update(images, labels);
-				model->setLabelInfo(face_label, face_name);
+				save_face(model, gray);
 			}
 		}
 
-		int predicted;
-		if (!model->empty()) {
-			//if the face is predicted
-			predicted = model->predict(gray);
-			if (predicted != -1) {
-				//show its name
-				String label_info = model->getLabelInfo(predicted);
-				cvui::printf(frame, (int)center.x, (int)center.y + radius + 10, 0.7, 0x0000ff, "%s", label_info.c_str());
+		predict_face(model, gray, frame, found_face);		
+	}
+}
+
+void save_face(Ptr<FaceRecognizer>& model, Mat gray) {
+	int i;
+	string face_name;
+	//get the name of the face as input
+	cout << "Input name of face:" << endl;
+	getline(cin, face_name);
+
+	vector<Mat> images;
+	vector<int> labels;
+	int face_label;
+	bool found_match = false;
+	//if there are already saved faces
+	if (!model->empty()) {
+		vector<int> match = model->getLabelsByString(face_name);
+		//if there are more than 1 matching strings including the name as substring
+		if (match.size() >= 1) {
+			for (size_t j = 0; j < match.size(); j++) {
+				int match_label = match[j];
+				String match_name = model->getLabelInfo(match_label);
+				//search for the exact same name and set face_label
+				if (match_name == face_name) {
+					face_label = match_label;
+					found_match = true;
+					break;
+				}
 			}
 		}
-
-		//draw circle or rectangle around the face
-		if (0.75 < aspect_ratio && aspect_ratio < 1.3)
-		{
-			circle(frame, center, radius, face_color, 3, 8, 0);
-		}
-		else {
-			rectangle(frame, found_face, face_color, 3, 8, 0);
+		//if there are no matches give the face an empty label
+		if (!found_match) {
+			for (i = 0; !model->getLabelInfo(i).empty(); i++);
+			face_label = i;
 		}
 	}
+	//else if model is empty this is the first face to remember so predicted = 0
+	else {
+		face_label = 0;
+	}
+	labels.push_back(face_label);
+	images.push_back(gray);
+	//train the face recognizer
+	model->update(images, labels);
+	model->setLabelInfo(face_label, face_name);
+	model->save("face.xml");
+}
+
+void predict_face(Ptr<FaceRecognizer>& model, Mat gray, Mat& frame, Rect found_face) {
+	int predicted;
+	Scalar face_color(255, 0, 0); //blue
+	Point nametag;
+
+	nametag = Point(found_face.x + (found_face.width / 2), found_face.y + found_face.height);
+
+	if (!model->empty()) {
+		//if the face is predicted
+		predicted = model->predict(gray);
+		if (predicted != -1) {
+			//show its name
+			String label_info = model->getLabelInfo(predicted);
+			cvui::printf(frame, (int)nametag.x, (int)nametag.y + 10, 0.7, 0x0000ff, "%s", label_info.c_str());
+		}
+	}
+	//draw circle or rectangle around the face
+	rectangle(frame, found_face, face_color, 3, 8, 0);
 }
