@@ -5,6 +5,9 @@ using namespace cv;
 
 // true = isFolder
 // false = isFile
+
+
+
 bool isFolder(String path)
 {
 	size_t sizePath = path.length();
@@ -32,14 +35,15 @@ Image::Image(String srcPath)
 		glob(srcPath, srcName, false);
 		for (auto src : srcName)
 		{
-			Mat mat = imread(src);
+			Mat mat = imread(src);;
 			srcMats.push_back(mat);
 		}
 	}
 	else
 	{
 		srcMat = imread(srcPath);
-		dstMat = srcMat.clone();
+		//dstMat = srcMat.clone();
+		srcMat.copyTo(dstMat);
 	}
 }
 
@@ -68,9 +72,7 @@ int Image::canny(int threshold)
 
 int Image::lighten(int intensity)
 {
-	
-	//dstMat = Mat::zeros(srcMat.size(), srcMat.type());
-	srcMat.Mat::convertTo(dstMat, CV_8U, 1, (double)intensity-50);
+	srcMat.Mat::convertTo(dstMat, CV_8U, 1, (double)intensity-100);
 	if (NULL != dstMat.data)
 		return EXIT_SUCCESS;
 	else
@@ -85,6 +87,7 @@ int Image::resize(int size)
 	else
 		return EXIT_FAILURE;
 }
+
 
 int Image::panorama(Stitcher::Mode mode)
 {
