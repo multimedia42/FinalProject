@@ -53,6 +53,7 @@ int main()
 	Image images;
 	Video video;
 	VideoCapture camera;
+	string video_file_name;
 	int low_threshold = 50, high_threshold = 150;
 	int darkness = 100;
 	int contrast = 100;
@@ -324,65 +325,124 @@ int main()
 		}
 		if (cvui::button(frame, workspace_col + 30, workspace_row-90,80,30, "import")) {
 			isvideo = false;
-			image = Image("../data/picture/van_gogh.jpg");
-			image_row = image.getDstMat().rows;
-			image_col = image.getDstMat().cols;
-			image.getDstMat().copyTo(src);
-			SetRect(rect, src);
-			src.copyTo(pic(rect));
-			low_threshold = 50;
-			high_threshold = 150;
-			darkness = 100;
-			size = 100;
-			contrast = 100;
-			angle = 0;
-			dilate_value = 1;
-			erode_value = 1;
-			blur3 = false;
-			blur5 = false;
-			gaussian3 = false;
-			gaussian5 = false;
+			bool fileExist = false;
+			string file_name;
+
+			if (use_camera) {
+				camera.release();
+			}
+
+			while (!fileExist) {
+				cout << "Input name of image file (Blank input to quit):" << endl;
+				getline(cin, file_name);
+
+				ifstream ifs(file_name);
+				if (ifs.is_open()) {
+					fileExist = true;
+				}
+				else if (file_name == "") {
+					break;
+				}
+				else {
+					cout << "Wrong file name. Please try again." << endl << endl;
+				}
+				ifs.close();
+			}
+
+			if (fileExist) {
+				image = Image(file_name);
+				image_row = image.getDstMat().rows;
+				image_col = image.getDstMat().cols;
+				image.getDstMat().copyTo(src);
+				SetRect(rect, src);
+				src.copyTo(pic(rect));
+				low_threshold = 50;
+				high_threshold = 150;
+				darkness = 100;
+				size = 100;
+				contrast = 100;
+				angle = 0;
+				dilate_value = 1;
+				erode_value = 1;
+				blur3 = false;
+				blur5 = false;
+				gaussian3 = false;
+				gaussian5 = false;
+
+				if (use_camera)
+				{
+					use_camera = false;
+				}
+			}
+			else if (use_camera) {
+				camera.open(0);
+				rate = 25.0;  //frame rate of video
+				videoSize = Size((int)camera.get(CAP_PROP_FRAME_WIDTH), (int)camera.get(CAP_PROP_FRAME_HEIGHT));
+			}
 
 			if (use_face) {
 				use_face = false;
-			}
-
-			if (use_camera)
-			{
-				use_camera = false;
-				camera.release();
 			}
 		}
 
 		if (cvui::button(frame, workspace_col + 210, workspace_row - 90, 80, 30, "import video")) {
 			isvideo = true;
-			video = Video("../data/video/chaplin.mp4");
-			video.getCap() >> src;
-			image_row = src.rows;
-			image_col = src.cols;
-			SetRect(rect, src);
-			src.copyTo(pic(rect));
-			low_threshold = 50;
-			high_threshold = 150;
-			darkness = 100;
-			size = 100;
-			contrast = 100;
-			angle = 0;
-			dilate_value = 1;
-			erode_value = 1;
-			blur3 = false;
-			blur5 = false;
-			gaussian3 = false;
-			gaussian5 = false;
-
-			if (use_face) {
-				use_face = false;
+			bool fileExist = false;
+			
+			if (use_camera) {
+				camera.release();
 			}
 
-			if (use_camera)
-			{
-				use_camera = false;
-				camera.release();
+			while (!fileExist) {
+				cout << "Input name of image file (Blank input to quit):" << endl;
+				getline(cin, video_file_name);
+
+				ifstream ifs(video_file_name);
+				if (ifs.is_open()) {
+					fileExist = true;
+				}
+				else if (video_file_name == "") {
+					break;
+				}
+				else {
+					cout << "Wrong file name. Please try again." << endl << endl;
+				}
+				ifs.close();
+			}
+
+			if (fileExist) {
+				video = Video(video_file_name);
+				video.getCap() >> src;
+				image_row = src.rows;
+				image_col = src.cols;
+				SetRect(rect, src);
+				src.copyTo(pic(rect));
+				low_threshold = 50;
+				high_threshold = 150;
+				darkness = 100;
+				size = 100;
+				contrast = 100;
+				angle = 0;
+				dilate_value = 1;
+				erode_value = 1;
+				blur3 = false;
+				blur5 = false;
+				gaussian3 = false;
+				gaussian5 = false;
+
+				if (use_camera)
+				{
+					use_camera = false;
+				}
+			}
+			else if (use_camera) {
+				camera.open(0);
+				rate = 25.0;  //frame rate of video
+				videoSize = Size((int)camera.get(CAP_PROP_FRAME_WIDTH), (int)camera.get(CAP_PROP_FRAME_HEIGHT));
+			}
+			
+			if (use_face) {
+				use_face = false;
 			}
 		}
 
@@ -393,7 +453,7 @@ int main()
 				imwrite("outputImage.jpg", dst);
 			}
 			else if (isvideo) {
-				Video outputVideo = Video("../data/video/chaplin.mp4");
+				Video outputVideo = Video(video_file_name);
 
 				int width = outputVideo.getCap().get(CAP_PROP_FRAME_WIDTH);
 				int height = outputVideo.getCap().get(CAP_PROP_FRAME_HEIGHT);
@@ -465,6 +525,7 @@ int main()
 				if (use_face) {
 					use_face = false;
 				}
+				isvideo = false;
 				use_camera = true; //start face recognition mode
 				camera.open(0);
 				rate = 25.0;  //frame rate of video
